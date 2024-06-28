@@ -1,32 +1,17 @@
-events {}
-
-http {
-    server {
-        listen 80;
-
-        location / {
-            # Reverse proxy 5xx errors
+location / {
+            proxy_pass http://your_upstream_server;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
             proxy_intercept_errors on;
             error_page 500 502 503 504 = @retry;
-
-            # All other responses to client
-            proxy_pass http://your_upstream_server;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
             add_header X-Proxy "NGINX";
-
-            # Time delay for 5xx errors
-            proxy_next_upstream_timeout 3;
+                proxy_next_upstream_timeout 3;
             proxy_next_upstream_tries 3;
-        }
 
         location = @retry {
-            # Retry location for 5xx errors
             proxy_pass http://your_upstream_server;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             add_header X-Proxy "NGINX";
+            }
         }
-    }
-}
-
