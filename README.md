@@ -1,1 +1,1 @@
-To learn and use the web framework nginx.
+To learn and use the web framework nginx
